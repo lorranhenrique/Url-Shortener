@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encurtador de URL</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 1rem;
+      background-color: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #5a67d8;
+    }
+
+    #result {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      color: #333;
+      word-wrap: break-word;
+    }
+
+    #result a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    #result a:hover {
+      color: #5a67d8;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔗 Encurtador de URL</h2>
+    <input type="text" id="originalUrl" placeholder="Cole a URL aqui..." />
+    <button onclick="shortenUrl()">Encurtar</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function shortenUrl() {
+      const originalUrl = document.getElementById('originalUrl').value;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = "Gerando...";
+
+      try {
+        const response = await fetch('http://localhost:3000/api/shorten', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ originalUrl })
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(error);
+        }
+
+        const data = await response.json();
+        resultDiv.innerHTML = `
+          <p>URL original: ${data.originalUrl}</p>
+          <p>URL encurtada: 
+            <a href="http://localhost:3000/${data.shortUrl}" target="_blank">
+              http://localhost:3000/${data.shortUrl}
+            </a>
+          </p>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `<p style="color:red;">Erro: ${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
