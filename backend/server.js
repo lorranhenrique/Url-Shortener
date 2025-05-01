@@ -21,8 +21,6 @@ const urlSchema = new mongoose.Schema({
 
 const Url = mongoose.model("Url",urlSchema);
 
-//ZOD for validatin in a more serius programs
-//Error handling middleware
 app.post("/api/shorten", async (req,res) => {
     const {originalUrl} = req.body;
     const shortUrl = shortid.generate();
